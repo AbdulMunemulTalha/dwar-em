@@ -17,6 +17,7 @@ import { supabase } from '@/src/config/supabase';
 import { useAuth } from '@/src/contexts/AuthContext';
 import { Button } from '@/src/components/common/Button';
 import { StampAnimation } from '@/src/components/common/StampAnimation';
+import { ShareReceiptModal } from '@/src/components/common/ShareReceiptModal';
 import { colors, spacing, typography, borderRadius, shadows } from '@/src/config/theme';
 import { Unit, Due, Payment, DueStatus } from '@/src/types/database.types';
 
@@ -37,19 +38,23 @@ export default function UnitDetailScreen() {
   const [stampAmount, setStampAmount] = useState<number>(0);
   const [selectedPayment, setSelectedPayment] = useState<Payment | null>(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [shareReceiptData, setShareReceiptData] = useState<any>(null);
+  const [propertyName, setPropertyName] = useState<string>('');
 
   const fetchUnitData = useCallback(async () => {
     if (!id) return;
     try {
-      // Fetch unit
+      // Fetch unit with property name
       const { data: unitData, error: unitError } = await supabase
         .from('units')
-        .select('*')
+        .select('*, properties(name)')
         .eq('id', id)
         .single();
 
       if (unitError) throw unitError;
       setUnit(unitData);
+      setPropertyName((unitData as any).properties?.name || '');
 
       // Fetch dues with payments
       const { data: duesData, error: duesError } = await supabase
@@ -128,14 +133,16 @@ export default function UnitDetailScreen() {
   const handleApprovePayment = async (payment: Payment, due: Due) => {
     try {
       // Update payment status to approved
-      const { error: paymentError } = await supabase
+      const { data: updatedPayment, error: paymentError } = await supabase
         .from('payments')
         .update({
           status: 'approved',
           approved_by: user?.id,
           approved_at: new Date().toISOString(),
         })
-        .eq('id', payment.id);
+        .eq('id', payment.id)
+        .select()
+        .single();
 
       if (paymentError) throw paymentError;
 
@@ -146,6 +153,16 @@ export default function UnitDetailScreen() {
         .eq('id', due.id);
 
       if (dueError) throw dueError;
+
+      // Prepare share receipt data
+      setShareReceiptData({
+        amount: Number(due.amount),
+        period: due.period_month,
+        unitNumber: unit?.unit_number || '',
+        propertyName: propertyName,
+        paidDate: updatedPayment.approved_at || new Date().toISOString(),
+        receiptId: updatedPayment.id,
+      });
 
       // Trigger stamp animation
       setStampAmount(Number(due.amount));
@@ -194,6 +211,16 @@ export default function UnitDetailScreen() {
                 .eq('id', due.id);
 
               if (dueError) throw dueError;
+
+              // Prepare share receipt data
+              setShareReceiptData({
+                amount: Number(due.amount),
+                period: due.period_month,
+                unitNumber: unit?.unit_number || '',
+                propertyName: propertyName,
+                paidDate: payment.approved_at || new Date().toISOString(),
+                receiptId: payment.id,
+              });
 
               // Trigger stamp animation
               setStampAmount(Number(due.amount));
@@ -370,6 +397,17 @@ export default function UnitDetailScreen() {
                             if (payment.status === 'pending_approval') {
                               setSelectedPayment(payment);
                               setShowPaymentModal(true);
+                            } else if (payment.status === 'approved') {
+                              // Reshare receipt
+                              setShareReceiptData({
+                                amount: Number(payment.amount),
+                                period: due.period_month,
+                                unitNumber: unit?.unit_number || '',
+                                propertyName: propertyName,
+                                paidDate: payment.approved_at || new Date().toISOString(),
+                                receiptId: payment.id,
+                              });
+                              setShowShareModal(true);
                             }
                           }}
                         >
@@ -383,7 +421,8 @@ export default function UnitDetailScreen() {
                             ৳{Number(payment.amount).toLocaleString()}
                           </Text>
                           <Text style={styles.paymentStatus}>
-                            {payment.status === 'pending_approval' ? 'Tap to approve' : 'Approved'}
+                            {payment.status === 'pending_approval' ? 'Tap to approve' :
+                             payment.status === 'approved' ? 'Tap to share' : 'Approved'}
                           </Text>
                         </TouchableOpacity>
                       ))}
@@ -456,8 +495,24 @@ export default function UnitDetailScreen() {
       {/* Stamp Animation */}
       <StampAnimation
         visible={showStamp}
-        onComplete={() => setShowStamp(false)}
+        onComplete={() => {
+          setShowStamp(false);
+          // Auto-open share modal after stamp animation
+          if (shareReceiptData) {
+            setTimeout(() => setShowShareModal(true), 200);
+          }
+        }}
         amount={stampAmount}
+      />
+
+      {/* Share Receipt Modal */}
+      <ShareReceiptModal
+        visible={showShareModal}
+        onClose={() => {
+          setShowShareModal(false);
+          setShareReceiptData(null);
+        }}
+        receipt={shareReceiptData}
       />
     </SafeAreaView>
   );

@@ -63,11 +63,59 @@ A mobile app for Bangladesh replacing paper ledgers (khata) with digital trust f
 - ✅ Property-linked expense tracking
 - ✅ Date & description display
 
-## 🚧 Phase 3 - Tenant Features (NEXT)
-- [ ] Tenant dashboard showing rent due
-- [ ] Pay rent (screenshot upload)
-- [ ] Payment history
-- [ ] Issue reporting (text + photo)
+## ✅ Phase 3 - Tenant Features + Viral Growth (COMPLETED)
+
+### Tenant Dashboard (`/(tenant)/dashboard`)
+- ✅ Active tenancy display with property/unit info
+- ✅ "Amount Due" hero card with total pending amount
+- ✅ Pending dues list with status bars (due/overdue)
+- ✅ "All Clear!" empty state with celebration
+- ✅ Quick actions: Report Issue, Payment History
+- ✅ Empty state for tenants without active tenancy
+
+### Tenant Payments (`/(tenant)/payments`)
+- ✅ Full ledger view with all dues (paid + pending)
+- ✅ **Screenshot upload flow** for payment submission
+- ✅ Payment status tracking (approved/pending/failed)
+- ✅ Base64 image storage for screenshots
+- ✅ Step-by-step payment instructions
+- ✅ Photo library permission handling
+
+### Tenant Issues (`/(tenant)/issues`)
+- ✅ Report maintenance issues with description
+- ✅ **Optional photo attachment** (base64)
+- ✅ Issue status tracking (open/in_progress/resolved/closed)
+- ✅ Chronological issue history
+
+### Tenant Profile (`/(tenant)/profile`)
+- ✅ Tenant role badge
+- ✅ Email display
+- ✅ Sign out functionality
+
+## 🎉 Viral Growth Feature: Ledger Screenshot Share
+
+### ShareableReceipt Component
+- ✅ Beautifully designed receipt card with:
+  - Dwar branding + "PAYMENT RECEIPT" label
+  - Large tabular-figure amount
+  - **Rotated "PAID" stamp** (green, -12° angle) with paid date
+  - Property, Unit, Tenant, Period, Paid Date details
+  - Receipt ID (first 8 chars of UUID uppercased)
+  - Footer: "Powered by Dwar — Digital Rent Ledger"
+
+### ShareReceiptModal
+- ✅ Uses `react-native-view-shot` to capture receipt as PNG
+- ✅ Uses `expo-sharing` for native share sheet (WhatsApp/SMS/Email)
+- ✅ Auto-opens after payment approval stamp animation
+- ✅ Also available on tap of any approved payment (re-share)
+
+### Viral Loop
+1. Owner approves payment → Stamp animation → Share modal opens
+2. Owner shares receipt to tenant via WhatsApp
+3. Tenant receives beautiful branded receipt
+4. Other landlords/tenants in group chats see the receipt
+5. Interest generated → downloads → new users
+6. **Zero-cost organic growth loop** ✨
 
 ## 🚧 Phase 4 - Rental Discovery
 - [ ] Public listings browse

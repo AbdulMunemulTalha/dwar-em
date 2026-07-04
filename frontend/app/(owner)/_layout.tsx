@@ -59,6 +59,12 @@ export default function OwnerLayout() {
           ),
         }}
       />
+      <Tabs.Screen
+        name="units"
+        options={{
+          href: null,
+        }}
+      />
     </Tabs>
   );
 }

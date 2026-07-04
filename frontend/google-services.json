@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "784488592005",
+    "project_id": "dwar-try-em",
+    "storage_bucket": "dwar-try-em.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:784488592005:android:e481c58c31cc326d10afec",
+        "android_client_info": {
+          "package_name": "com.dwar.dwar"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCo9c2E0UvHnOrKxUa4E6YBI-eeTucN-cI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

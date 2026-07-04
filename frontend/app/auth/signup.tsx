@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -27,8 +27,16 @@ export default function SignupScreen() {
   const [role, setRole] = useState<'owner' | 'tenant'>('owner');
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const { signUp, loading } = useAuth();
+  const { signUp, loading, user, role: currentRole } = useAuth();
   const router = useRouter();
+
+  // Redirect after successful signup
+  useEffect(() => {
+    if (user && currentRole) {
+      if (currentRole === 'owner') router.replace('/(owner)/dashboard');
+      else if (currentRole === 'tenant') router.replace('/(tenant)/dashboard');
+    }
+  }, [user, currentRole, router]);
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
@@ -59,10 +67,8 @@ export default function SignupScreen() {
     const { error } = await signUp(email, password, name, phone, role);
     if (error) {
       Alert.alert('Signup Failed', error.message || 'Please try again');
-    } else {
-      Alert.alert('Success', 'Account created successfully! Please login.');
-      router.replace('/auth/login');
     }
+    // Success auto-navigates via useEffect
   };
 
   return (

@@ -26,7 +26,7 @@ export default function OwnerLayout() {
       <Tabs.Screen
         name="dashboard"
         options={{
-          title: 'Dashboard',
+          title: 'Home',
           tabBarIcon: ({ color, size }) => (
             <MaterialIcons name="dashboard" size={size} color={color} />
           ),
@@ -38,6 +38,15 @@ export default function OwnerLayout() {
           title: 'Properties',
           tabBarIcon: ({ color, size }) => (
             <MaterialIcons name="apartment" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="bookings"
+        options={{
+          title: 'Bookings',
+          tabBarIcon: ({ color, size }) => (
+            <MaterialIcons name="event-available" size={size} color={color} />
           ),
         }}
       />

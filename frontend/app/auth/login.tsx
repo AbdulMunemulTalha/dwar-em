@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -23,8 +23,17 @@ export default function LoginScreen() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
-  const { signIn, loading } = useAuth();
+  const { signIn, loading, user, role } = useAuth();
   const router = useRouter();
+
+  // Redirect after successful login
+  useEffect(() => {
+    if (user && role) {
+      if (role === 'owner') router.replace('/(owner)/dashboard');
+      else if (role === 'tenant') router.replace('/(tenant)/dashboard');
+      else if (role === 'admin') router.replace('/');
+    }
+  }, [user, role, router]);
 
   const validateForm = () => {
     const newErrors: { email?: string; password?: string } = {};
